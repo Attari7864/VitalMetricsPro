@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VitalMetrics Pro - Comprehensive health calculators with personalized nutrition advice for BMI, BMR, body fat, macros and more">
+    <title>VitalMetrics Pro | Health Calculators with Nutrition Guidance</title>
+    <style>
+        :root {
+            --primary: #2E8B57;
+            --primary-light: #5CB85C;
+            --secondary: #FF7F50;
+            --light: #f5f7fa;
+            --dark: #333;
+            --danger: #D9534F;
+            --warning: #F0AD4E;
+            --success: #5CB85C;
+            --info: #5BC0DE;
+            --text: #444;
+        }
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .app-version {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        .tab-buttons {
+            display: flex;
+            background: #e9ecef;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+            color: var(--text);
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        .tab-content {
+            padding: 25px;
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .calculator-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+        .calculator-description {
+            margin-bottom: 20px;
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .unit-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .unit-toggle button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            background: #f1f1f1;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .unit-toggle button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(46, 139, 87, 0.2);
+        }
+        button.calculate {
+            width: 100%;
+            padding: 15px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        button.calculate:hover {
+            background: #e67349;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 127, 80, 0.3);
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: var(--light);
+            display: none;
+            border-left: 4px solid var(--primary);
+        }
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        .result-title svg {
+            margin-right: 10px;
+        }
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 15px 0;
+            color: var(--dark);
+        }
+        .category {
+            text-align: center;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 1.1rem;
+        }
+        .underweight { background: var(--info); }
+        .normal { background: var(--success); }
+        .overweight { background: var(--warning); }
+        .obese { background: var(--danger); }
+        .nutrition-guide {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .nutrition-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        .nutrition-category {
+            margin-bottom: 20px;
+        }
+        .nutrition-category h4 {
+            margin-bottom: 10px;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        .nutrition-list {
+            list-style-type: none;
+        }
+        .nutrition-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .nutrition-list li:last-child {
+            border-bottom: none;
+        }
+        .nutrition-list li svg {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        .good-food { color: var(--success); }
+        .avoid-food { color: var(--danger); }
+        .tips {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            margin-top: 15px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            border-radius: 0 5px 5px 0;
+        }
+        .tips strong {
+            color: var(--primary);
+        }
+        .bmi-chart {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        .bmi-chart th, .bmi-chart td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .bmi-chart th {
+            background-color: var(--primary);
+            color: white;
+        }
+        .bmi-chart tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .frame-size-guide {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 5px;
+        }
+        .frame-size-guide h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        .frame-size-images {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .frame-size-img {
+            text-align: center;
+            margin: 10px;
+        }
+        .frame-size-img img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+        .frame-size-img p {
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            header p {
+                font-size: 1rem;
+            }
+            .tab-btn {
+                padding: 12px 8px;
+                font-size: 0.9rem;
+                min-width: 90px;
+            }
+            .tab-content {
+                padding: 20px 15px;
+            }
+            .result-value {
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 480px) {
+            header {
+                padding: 25px 15px;
+            }
+            .tab-buttons {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .tab-btn {
+                min-width: 100px;
+                padding: 12px 5px;
+                font-size: 0.85rem;
+            }
+            .unit-toggle button {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="app-version">PRO</div>
+            <h1>VitalMetrics Pro</h1>
+            <p>Your complete health analytics platform with personalized nutrition guidance</p>
+        </header>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="openTab('bmi')">BMI</button>
+            <button class="tab-btn" onclick="openTab('bmr')">BMR/TDEE</button>
+            <button class="tab-btn" onclick="openTab('bodyfat')">Body Fat</button>
+            <button class="tab-btn" onclick="openTab('idealweight')">Ideal Weight</button>
+            <button class="tab-btn" onclick="openTab('calorie')">Calorie</button>
+            <button class="tab-btn" onclick="openTab('macros')">Macros</button>
+        </div>
+
+        <!-- BMI Calculator -->
+        <div id="bmi" class="tab-content active">
+            <h2 class="calculator-title">Body Mass Index (BMI) Calculator</h2>
+            <p class="calculator-description">BMI measures body fat based on your height and weight. Use this calculator to assess whether your weight is in a healthy range and get personalized nutrition advice.</p>
+            
+            <div class="unit-toggle">
+                <button id="bmi-metric-btn" class="active">Metric (kg/cm)</button>
+                <button id="bmi-imperial-btn">Imperial (lbs/ft/in)</button>
+            </div>
+
+            <div id="bmi-metric-inputs">
+                <div class="input-group">
+                    <label for="weight-kg">Weight (kg)</label>
+                    <input type="number" id="weight-kg" placeholder="e.g., 70" min="30" max="300">
+                </div>
+                <div class="input-group">
+                    <label for="height-cm">Height (cm)</label>
+                    <input type="number" id="height-cm" placeholder="e.g., 175" min="100" max="250">
+                </div>
+            </div>
+
+            <div id="bmi-imperial-inputs" style="display: none;">
+                <div class="input-group">
+                    <label for="weight-lbs">Weight (lbs)</label>
+                    <input type="number" id="weight-lbs" placeholder="e.g., 154" min="66" max="660">
+                </div>
+                <div class="input-group">
+                    <label for="height-ft">Height (ft)</label>
+                    <input type="number" id="height-ft" placeholder="e.g., 5" min="3" max="8">
+                </div>
+                <div class="input-group">
+                    <label for="height-in">Height (in)</label>
+                    <input type="number" id="height-in" placeholder="e.g., 9" min="0" max="11">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="bmi-age">Age (years)</label>
+                <input type="number" id="bmi-age" placeholder="e.g., 30" min="2" max="120">
+            </div>
+            <div class="input-group">
+                <label for="bmi-gender">Gender</label>
+                <select id="bmi-gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+
+            <button class="calculate" onclick="calculateBMI()">Calculate BMI & Get Nutrition Plan</button>
+
+            <div id="bmi-result" class="result">
+                <div class="result-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Your BMI Results
+                </div>
+                <div class="result-value">BMI: <span id="bmi-value">0</span></div>
+                <div class="category" id="bmi-category">-</div>
+                
+                <div class="tips">
+                    <strong>Healthy BMI Range:</strong> 18.5 - 24.9<br>
+                    <span id="ideal-weight-tip">-</span>
+                </div>
+                
+                <table class="bmi-chart">
+                    <thead>
+                        <tr>
+                            <th>BMI</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&lt; 16</td>
+                            <td>Severe Thinness</td>
+                        </tr>
+                        <tr>
+                            <td>16 - 16.9</td>
+                            <td>Moderate Thinness</td>
+                        </tr>
+                        <tr>
+                            <td>17 - 18.4</td>
+                            <td>Mild Thinness</td>
+                        </tr>
+                        <tr>
+                            <td>18.5 - 24.9</td>
+                            <td>Normal</td>
+                        </tr>
+                        <tr>
+                            <td>25 - 29.9</td>
+                            <td>Overweight</td>
+                        </tr>
+                        <tr>
+                            <td>30 - 34.9</td>
+                            <td>Obese Class I</td>
+                        </tr>
+                        <tr>
+                            <td>35 - 39.9</td>
+                            <td>Obese Class II</td>
+                        </tr>
+                        <tr>
+                            <td>≥ 40</td>
+                            <td>Obese Class III</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="nutrition-guide">
+                    <div class="nutrition-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9.09 9C9.3251 8.33167 9.78915 7.76811 10.4 7.40913C11.0108 7.05016 11.7289 6.91894 12.4272 7.03871C13.1255 7.15849 13.7588 7.52152 14.2151 8.06353C14.6713 8.60553 14.9211 9.29152 14.92 10C14.92 12 11.92 13 11.92 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Personalized Nutrition Guide
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>What to Eat:</h4>
+                        <ul class="nutrition-list" id="bmi-eat">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>How Much to Eat:</h4>
+                        <p id="bmi-how-much">-</p>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>What to Avoid:</h4>
+                        <ul class="nutrition-list" id="bmi-avoid">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Additional Tips:</h4>
+                        <p id="bmi-additional-tips">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BMR Calculator -->
+        <div id="bmr" class="tab-content">
+            <h2 class="calculator-title">BMR & TDEE Calculator</h2>
+            <p class="calculator-description">Calculate your Basal Metabolic Rate (BMR) - the calories your body needs at rest - and Total Daily Energy Expenditure (TDEE) based on your activity level. Get personalized nutrition advice for your goals.</p>
+            
+            <div class="input-group">
+                <label for="age">Age (years)</label>
+                <input type="number" id="age" placeholder="e.g., 30" min="15" max="100">
+            </div>
+            <div class="input-group">
+                <label for="gender">Gender</label>
+                <select id="gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            
+            <div class="unit-toggle">
+                <button id="bmr-metric-btn" class="active">Metric (kg/cm)</button>
+                <button id="bmr-imperial-btn">Imperial (lbs/ft/in)</button>
+            </div>
+
+            <div id="bmr-metric-inputs">
+                <div class="input-group">
+                    <label for="bmr-weight-kg">Weight (kg)</label>
+                    <input type="number" id="bmr-weight-kg" placeholder="e.g., 70" min="30" max="300">
+                </div>
+                <div class="input-group">
+                    <label for="bmr-height-cm">Height (cm)</label>
+                    <input type="number" id="bmr-height-cm" placeholder="e.g., 175" min="100" max="250">
+                </div>
+            </div>
+
+            <div id="bmr-imperial-inputs" style="display: none;">
+                <div class="input-group">
+                    <label for="bmr-weight-lbs">Weight (lbs)</label>
+                    <input type="number" id="bmr-weight-lbs" placeholder="e.g., 154" min="66" max="660">
+                </div>
+                <div class="input-group">
+                    <label for="bmr-height-ft">Height (ft)</label>
+                    <input type="number" id="bmr-height-ft" placeholder="e.g., 5" min="3" max="8">
+                </div>
+                <div class="input-group">
+                    <label for="bmr-height-in">Height (in)</label>
+                    <input type="number" id="bmr-height-in" placeholder="e.g., 9" min="0" max="11">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="activity-level">Activity Level</label>
+                <select id="activity-level">
+                    <option value="1.2">Sedentary (little or no exercise)</option>
+                    <option value="1.375">Lightly Active (light exercise 1-3 days/week)</option>
+                    <option value="1.55">Moderately Active (moderate exercise 3-5 days/week)</option>
+                    <option value="1.725">Very Active (hard exercise 6-7 days/week)</option>
+                    <option value="1.9">Extra Active (very hard exercise & physical job)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="bmr-goal">Your Goal</label>
+                <select id="bmr-goal">
+                    <option value="loss">Weight Loss</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="gain">Weight Gain</option>
+                </select>
+            </div>
+
+            <button class="calculate" onclick="calculateBMR()">Calculate BMR & Get Nutrition Plan</button>
+
+            <div id="bmr-result" class="result">
+                <div class="result-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 12H18L15 21L9 3L6 12H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Your Daily Calorie Needs
+                </div>
+                <div class="result-value">BMR: <span id="bmr-value">0</span> kcal</div>
+                <div class="result-value">TDEE: <span id="tdee-value">0</span> kcal</div>
+                
+                <div class="tips">
+                    <strong>Goal Calories:</strong><br>
+                    - Weight Loss (0.5kg/week): <span id="loss-slow">-</span> kcal<br>
+                    - Weight Loss (1kg/week): <span id="loss-fast">-</span> kcal<br>
+                    - Maintenance: <span id="maintenance">-</span> kcal<br>
+                    - Weight Gain (0.5kg/week): <span id="gain-slow">-</span> kcal
+                </div>
+                
+                <div class="nutrition-guide">
+                    <div class="nutrition-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Personalized Nutrition Guide
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>What to Eat:</h4>
+                        <ul class="nutrition-list" id="bmr-eat">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>How Much to Eat:</h4>
+                        <p id="bmr-how-much">-</p>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>What to Avoid:</h4>
+                        <ul class="nutrition-list" id="bmr-avoid">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Meal Timing Tips:</h4>
+                        <p id="bmr-meal-timing">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body Fat Calculator -->
+        <div id="bodyfat" class="tab-content">
+            <h2 class="calculator-title">Body Fat Percentage Calculator</h2>
+            <p class="calculator-description">Estimate your body fat percentage using the U.S. Navy method. Get personalized recommendations based on your results.</p>
+            
+            <div class="input-group">
+                <label for="bodyfat-gender">Gender</label>
+                <select id="bodyfat-gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            
+            <div class="unit-toggle">
+                <button id="bodyfat-metric-btn" class="active">Metric (cm)</button>
+                <button id="bodyfat-imperial-btn">Imperial (in)</button>
+            </div>
+
+            <div id="bodyfat-metric-inputs">
+                <div class="input-group">
+                    <label for="waist-cm">Waist Circumference (cm)</label>
+                    <input type="number" id="waist-cm" placeholder="Measured at navel" min="50" max="200">
+                </div>
+                <div class="input-group" id="neck-cm-group">
+                    <label for="neck-cm">Neck Circumference (cm)</label>
+                    <input type="number" id="neck-cm" placeholder="Below Adam's apple" min="20" max="60">
+                </div>
+                <div class="input-group" id="hip-cm-group" style="display: none;">
+                    <label for="hip-cm">Hip Circumference (cm)</label>
+                    <input type="number" id="hip-cm" placeholder="Widest part of hips" min="60" max="200">
+                </div>
+            </div>
+
+            <div id="bodyfat-imperial-inputs" style="display: none;">
+                <div class="input-group">
+                    <label for="waist-in">Waist Circumference (in)</label>
+                    <input type="number" id="waist-in" placeholder="Measured at navel" min="20" max="80">
+                </div>
+                <div class="input-group" id="neck-in-group">
+                    <label for="neck-in">Neck Circumference (in)</label>
+                    <input type="number" id="neck-in" placeholder="Below Adam's apple" min="8" max="24">
+                </div>
+                <div class="input-group" id="hip-in-group" style="display: none;">
+                    <label for="hip-in">Hip Circumference (in)</label>
+                    <input type="number" id="hip-in" placeholder="Widest part of hips" min="24" max="80">
+                </div>
+            </div>
+
+            <button class="calculate" onclick="calculateBodyFat()">Calculate Body Fat & Get Plan</button>
+
+            <div id="bodyfat-result" class="result">
+                <div class="result-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Your Body Fat Analysis
+                </div>
+                <div class="result-value"><span id="bodyfat-value">0</span>%</div>
+                <div class="category" id="bodyfat-category">-</div>
+                
+                <div class="tips">
+                    <strong>Healthy Body Fat Ranges:</strong><br>
+                    - Men: 8-19% (Athlete), 20-24% (Fitness)<br>
+                    - Women: 21-33% (Fitness), 34-39% (Acceptable)
+                </div>
+                
+                <div class="nutrition-guide">
+                    <div class="nutrition-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 12H18L15 21L9 3L6 12H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Body Composition Nutrition Plan
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Foods to Reduce Body Fat:</h4>
+                        <ul class="nutrition-list" id="bodyfat-reduce">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Foods to Maintain Muscle:</h4>
+                        <ul class="nutrition-list" id="bodyfat-maintain">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>What to Avoid:</h4>
+                        <ul class="nutrition-list" id="bodyfat-avoid">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Supplement Recommendations:</h4>
+                        <p id="bodyfat-supplements">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ideal Weight Calculator -->
+        <div id="idealweight" class="tab-content">
+            <h2 class="calculator-title">Ideal Weight Calculator</h2>
+            <p class="calculator-description">Calculate your healthy weight range based on height, gender, and body frame size. Get personalized nutrition advice for achieving and maintaining your ideal weight.</p>
+            
+            <div class="input-group">
+                <label for="ideal-gender">Gender</label>
+                <select id="ideal-gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            
+            <div class="unit-toggle">
+                <button id="ideal-metric-btn" class="active">Metric (cm)</button>
+                <button id="ideal-imperial-btn">Imperial (ft/in)</button>
+            </div>
+
+            <div id="ideal-metric-inputs">
+                <div class="input-group">
+                    <label for="ideal-height-cm">Height (cm)</label>
+                    <input type="number" id="ideal-height-cm" placeholder="e.g., 175" min="100" max="250">
+                </div>
+            </div>
+
+            <div id="ideal-imperial-inputs" style="display: none;">
+                <div class="input-group">
+                    <label for="ideal-height-ft">Height (ft)</label>
+                    <input type="number" id="ideal-height-ft" placeholder="e.g., 5" min="3" max="8">
+                </div>
+                <div class="input-group">
+                    <label for="ideal-height-in">Height (in)</label>
+                    <input type="number" id="ideal-height-in" placeholder="e.g., 9" min="0" max="11">
+                </div>
+            </div>
+
+            <div class="frame-size-guide">
+                <h4>Body Frame Size</h4>
+                <p>Your frame size affects your ideal weight. Measure your wrist circumference to determine:</p>
+                
+                <div class="frame-size-images">
+                    <div class="frame-size-img">
+                        <img src="https://img.icons8.com/ios/50/2E8B57/small-size.png" alt="Small frame">
+                        <p>Small: &lt; 6.5" (M), &lt; 6" (F)</p>
+                    </div>
+                    <div class="frame-size-img">
+                        <img src="https://img.icons8.com/ios/50/2E8B57/medium-size.png" alt="Medium frame">
+                        <p>Medium: 6.5-7.5" (M), 6-6.75" (F)</p>
+                    </div>
+                    <div class="frame-size-img">
+                        <img src="https://img.icons8.com/ios/50/2E8B57/large-size.png" alt="Large frame">
+                        <p>Large: &gt; 7.5" (M), &gt; 6.75" (F)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="frame-size">Select Your Frame Size</label>
+                <select id="frame-size">
+                    <option value="small">Small</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="large">Large</option>
+                </select>
+            </div>
+
+            <button class="calculate" onclick="calculateIdealWeight()">Calculate Ideal Weight</button>
+
+            <div id="idealweight-result" class="result">
+                <div class="result-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Your Ideal Weight Range
+                </div>
+                <div class="result-value"><span id="ideal-weight-range">-</span></div>
+                
+                <div class="tips">
+                    <strong>Formulas Used:</strong> Hamwi (1964) and Devine (1974)<br>
+                    <span id="ideal-weight-tip">Adjust for muscle mass or body composition goals.</span>
+                </div>
+                
+                <div class="nutrition-guide">
+                    <div class="nutrition-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Nutrition for Healthy Weight
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Foods for Healthy Weight:</h4>
+                        <ul class="nutrition-list" id="idealweight-foods">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Portion Control Tips:</h4>
+                        <p id="idealweight-portions">-</p>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Foods to Limit:</h4>
+                        <ul class="nutrition-list" id="idealweight-limit">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Meal Frequency:</h4>
+                        <p id="idealweight-frequency">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calorie Calculator -->
+        <div id="calorie" class="tab-content">
+            <h2 class="calculator-title">Calorie Calculator</h2>
+            <p class="calculator-description">Calculate your daily calorie needs based on your weight goals (loss, maintenance, or gain) and activity level. Get a personalized meal plan to reach your targets.</p>
+            
+            <div class="input-group">
+                <label for="calorie-goal">Your Goal</label>
+                <select id="calorie-goal">
+                    <option value="loss">Weight Loss</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="gain">Weight Gain</option>
+                </select>
+            </div>
+            
+            <div class="unit-toggle">
+                <button id="calorie-metric-btn" class="active">Metric (kg)</button>
+                <button id="calorie-imperial-btn">Imperial (lbs)</button>
+            </div>
+
+            <div id="calorie-metric-inputs">
+                <div class="input-group">
+                    <label for="current-weight-kg">Current Weight (kg)</label>
+                    <input type="number" id="current-weight-kg" placeholder="e.g., 70" min="30" max="300">
+                </div>
+                <div class="input-group">
+                    <label for="target-weight-kg">Target Weight (kg)</label>
+                    <input type="number" id="target-weight-kg" placeholder="e.g., 65" min="30" max="300">
+                </div>
+            </div>
+
+            <div id="calorie-imperial-inputs" style="display: none;">
+                <div class="input-group">
+                    <label for="current-weight-lbs">Current Weight (lbs)</label>
+                    <input type="number" id="current-weight-lbs" placeholder="e.g., 154" min="66" max="660">
+                </div>
+                <div class="input-group">
+                    <label for="target-weight-lbs">Target Weight (lbs)</label>
+                    <input type="number" id="target-weight-lbs" placeholder="e.g., 143" min="66" max="660">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="timeframe">Timeframe (weeks)</label>
+                <input type="number" id="timeframe" placeholder="e.g., 8" min="1" max="52">
+            </div>
+
+            <div class="input-group">
+                <label for="calorie-activity">Activity Level</label>
+                <select id="calorie-activity">
+                    <option value="1.2">Sedentary (little or no exercise)</option>
+                    <option value="1.375">Lightly Active (light exercise 1-3 days/week)</option>
+                    <option value="1.55">Moderately Active (moderate exercise 3-5 days/week)</option>
+                    <option value="1.725">Very Active (hard exercise 6-7 days/week)</option>
+                    <option value="1.9">Extra Active (very hard exercise & physical job)</option>
+                </select>
+            </div>
+
+            <button class="calculate" onclick="calculateCalories()">Calculate Calories & Get Meal Plan</button>
+
+            <div id="calorie-result" class="result">
+                <div class="result-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 8H6C4.34315 8 3 9.34315 3 11V13C3 14.6569 4.34315 16 6 16H18C19.6569 16 21 14.6569 21 13V11C21 9.34315 19.6569 8 18 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 16V19C16 20.6569 14.6569 22 13 22H11C9.34315 22 8 20.6569 8 19V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8 8V5C8 3.34315 9.34315 2 11 2H13C14.6569 2 16 3.34315 16 5V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Your Calorie Targets
+                </div>
+                <div class="result-value"><span id="calorie-target">0</span> kcal/day</div>
+                
+                <div class="tips">
+                    <strong>Projected Progress:</strong><br>
+                    - Starting Weight: <span id="start-weight">-</span><br>
+                    - Target Weight: <span id="end-weight">-</span><br>
+                    - Weekly Change: <span id="weekly-change">-</span><br>
+                    - Estimated Completion: <span id="completion-time">-</span> weeks
+                </div>
+                
+                <div class="nutrition-guide">
+                    <div class="nutrition-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Personalized Meal Plan
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Breakfast Ideas (<span id="breakfast-calories">-</span> kcal):</h4>
+                        <ul class="nutrition-list" id="calorie-breakfast">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Lunch Ideas (<span id="lunch-calories">-</span> kcal):</h4>
+                        <ul class="nutrition-list" id="calorie-lunch">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Dinner Ideas (<span id="dinner-calories">-</span> kcal):</h4>
+                        <ul class="nutrition-list" id="calorie-dinner">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Snack Ideas (<span id="snack-calories">-</span> kcal):</h4>
+                        <ul class="nutrition-list" id="calorie-snacks">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Macro Calculator -->
+        <div id="macros" class="tab-content">
+            <h2 class="calculator-title">Macronutrient Calculator</h2>
+            <p class="calculator-description">Calculate your ideal macronutrient distribution (protein, carbs, fats) based on your fitness goals. Get food suggestions for each macro category.</p>
+            
+            <div class="input-group">
+                <label for="macro-goal">Your Primary Goal</label>
+                <select id="macro-goal">
+                    <option value="fatloss">Fat Loss</option>
+                    <option value="musclegain">Muscle Gain</option>
+                    <option value="performance">Athletic Performance</option>
+                    <option value="maintenance">Maintenance</option>
+                </select>
+            </div>
+            
+            <div class="unit-toggle">
+                <button id="macro-metric-btn" class="active">Metric (kg)</button>
+                <button id="macro-imperial-btn">Imperial (lbs)</button>
+            </div>
+
+            <div id="macro-metric-inputs">
+                <div class="input-group">
+                    <label for="macro-weight-kg">Weight (kg)</label>
+                    <input type="number" id="macro-weight-kg" placeholder="e.g., 70" min="30" max="300">
+                </div>
+            </div>
+
+            <div id="macro-imperial-inputs" style="display: none;">
+                <div class="input-group">
+                    <label for="macro-weight-lbs">Weight (lbs)</label>
+                    <input type="number" id="macro-weight-lbs" placeholder="e.g., 154" min="66" max="660">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="macro-activity">Activity Level</label>
+                <select id="macro-activity">
+                    <option value="1.2">Sedentary (little or no exercise)</option>
+                    <option value="1.375">Lightly Active (light exercise 1-3 days/week)</option>
+                    <option value="1.55">Moderately Active (moderate exercise 3-5 days/week)</option>
+                    <option value="1.725">Very Active (hard exercise 6-7 days/week)</option>
+                    <option value="1.9">Extra Active (very hard exercise & physical job)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="protein-preference">Protein Intake</label>
+                <select id="protein-preference">
+                    <option value="0.8">0.8g/lb (Moderate)</option>
+                    <option value="1.0" selected>1.0g/lb (Standard)</option>
+                    <option value="1.2">1.2g/lb (High)</option>
+                    <option value="1.5">1.5g/lb (Very High)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="fat-preference">Fat Intake (% of calories)</label>
+                <select id="fat-preference">
+                    <option value="20">20% (Low)</option>
+                    <option value="25" selected>25% (Moderate)</option>
+                    <option value="30">30% (High)</option>
+                    <option value="35">35% (Very High)</option>
+                </select>
+            </div>
+
+            <button class="calculate" onclick="calculateMacros()">Calculate Macros & Get Food Plan</button>
+
+            <div id="macros-result" class="result">
+                <div class="result-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Your Daily Macronutrients
+                </div>
+                <div class="result-value"><span id="macro-calories">0</span> kcal</div>
+                
+                <div class="tips">
+                    <strong>Macronutrient Split:</strong><br>
+                    - Protein: <span id="macro-protein">0</span>g (<span id="macro-protein-percent">0</span>%)<br>
+                    - Carbohydrates: <span id="macro-carbs">0</span>g (<span id="macro-carbs-percent">0</span>%)<br>
+                    - Fats: <span id="macro-fats">0</span>g (<span id="macro-fats-percent">0</span>%)
+                </div>
+                
+                <div class="nutrition-guide">
+                    <div class="nutrition-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Food Sources for Each Macro
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Protein Sources (<span id="protein-target">0</span>g):</h4>
+                        <ul class="nutrition-list" id="macro-protein-foods">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Carbohydrate Sources (<span id="carbs-target">0</span>g):</h4>
+                        <ul class="nutrition-list" id="macro-carb-foods">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Fat Sources (<span id="fats-target">0</span>g):</h4>
+                        <ul class="nutrition-list" id="macro-fat-foods">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-category">
+                        <h4>Meal Timing Strategy:</h4>
+                        <p id="macro-timing">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        function openTab(tabName) {
+            const tabs = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            document.getElementById(tabName).classList.add('active');
+
+            const buttons = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            event.currentTarget.classList.add('active');
+        }
+
+        // BMI Calculator
+        document.getElementById('bmi-metric-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('bmi-imperial-btn').classList.remove('active');
+            document.getElementById('bmi-metric-inputs').style.display = 'block';
+            document.getElementById('bmi-imperial-inputs').style.display = 'none';
+        });
+        document.getElementById('bmi-imperial-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('bmi-metric-btn').classList.remove('active');
+            document.getElementById('bmi-metric-inputs').style.display = 'none';
+            document.getElementById('bmi-imperial-inputs').style.display = 'block';
+        });
+
+        function calculateBMI() {
+            let weight, height, bmi;
+
+            if (document.getElementById('bmi-metric-btn').classList.contains('active')) {
+                weight = parseFloat(document.getElementById('weight-kg').value);
+                height = parseFloat(document.getElementById('height-cm').value) / 100;
+                if (!weight || !height) {
+                    alert("Please enter valid weight and height.");
+                    return;
+                }
+                bmi = weight / (height * height);
+            } else {
+                weight = parseFloat(document.getElementById('weight-lbs').value);
+                const feet = parseFloat(document.getElementById('height-ft').value);
+                const inches = parseFloat(document.getElementById('height-in').value);
+                if (!weight || !feet || isNaN(inches)) {
+                    alert("Please enter valid weight and height.");
+                    return;
+                }
+                height = (feet * 12) + inches;
+                bmi = (weight / (height * height)) * 703;
+            }
+
+            const age = parseInt(document.getElementById('bmi-age').value);
+            const gender = document.getElementById('bmi-gender').value;
+
+            document.getElementById('bmi-value').textContent = bmi.toFixed(1);
+            document.getElementById('bmi-result').style.display = 'block';
+
+            const categoryElement = document.getElementById('bmi-category');
+            let category, idealWeight, eatList, avoidList, howMuch, additionalTips;
+
+            if (bmi < 16) {
+                category = "Severely Underweight";
+                categoryElement.className = "category underweight";
+                idealWeight = "Focus on nutrient-dense foods to gain weight healthily. Consult a doctor if unintentional weight loss.";
+                
+                eatList = [
+                    "Nutrient-dense foods like nuts, seeds, and avocados",
+                    "Whole milk and full-fat dairy products",
+                    "Lean proteins (chicken, fish, eggs)",
+                    "Healthy carbs (whole grains, potatoes, fruits)",
+                    "Smoothies with protein powder and nut butter"
+                ];
+                
+                avoidList = [
+                    "Filling up on low-calorie foods like salads",
+                    "Skipping meals",
+                    "Drinking liquids before meals",
+                    "Processed junk food (empty calories)"
+                ];
+                
+                howMuch = "Aim for 3 main meals + 2-3 snacks daily. Add 300-500 extra calories to your maintenance needs.";
+                additionalTips = "Consider working with a dietitian to address any underlying issues. Strength training can help build muscle mass.";
+            } 
+            else if (bmi < 18.5) {
+                category = "Underweight";
+                categoryElement.className = "category underweight";
+                idealWeight = "Increase calorie intake with healthy, nutrient-rich foods to reach a healthier weight.";
+                
+                eatList = [
+                    "Healthy fats (nuts, seeds, olive oil, avocado)",
+                    "Protein-rich foods (lean meats, fish, eggs, legumes)",
+                    "Whole grains (brown rice, quinoa, whole wheat bread)",
+                    "Dairy or dairy alternatives",
+                    "Dried fruits and trail mix for snacks"
+                ];
+                
+                avoidList = [
+                    "Filling up on low-calorie vegetables",
+                    "Drinking too much water before meals",
+                    "Skipping meals or snacks",
+                    "Processed sugars (they provide calories but lack nutrients)"
+                ];
+                
+                howMuch = "Eat every 2-3 hours. Add 250-500 extra calories to your maintenance needs with nutrient-dense foods.";
+                additionalTips = "Combine increased eating with strength training to build muscle rather than just fat.";
+            } 
+            else if (bmi < 25) {
+                category = "Normal Weight";
+                categoryElement.className = "category normal";
+                idealWeight = "Maintain your current healthy lifestyle with balanced nutrition and regular exercise.";
+                
+                eatList = [
+                    "Variety of colorful vegetables and fruits",
+                    "Lean proteins (chicken, fish, tofu, legumes)",
+                    "Whole grains (brown rice, quinoa, oats)",
+                    "Healthy fats (avocado, nuts, olive oil)",
+                    "Low-fat dairy or alternatives"
+                ];
+                
+                avoidList = [
+                    "Excessive processed foods",
+                    "Sugary drinks and snacks",
+                    "Trans fats and excessive saturated fats",
+                    "Overeating even healthy foods"
+                ];
+                
+                howMuch = "Follow standard portion sizes: palm-sized protein, fist-sized carbs, thumb-sized fats at each meal.";
+                additionalTips = "Focus on maintaining your healthy habits. Regular exercise and balanced eating will help you stay in this range.";
+            } 
+            else if (bmi < 30) {
+                category = "Overweight";
+                categoryElement.className = "category overweight";
+                idealWeight = "Aim for gradual weight loss through a modest calorie deficit and increased physical activity.";
+                
+                eatList = [
+                    "High-fiber vegetables (broccoli, spinach, carrots)",
+                    "Lean proteins (chicken breast, fish, egg whites)",
+                    "Low-glycemic carbs (quinoa, sweet potatoes, berries)",
+                    "Healthy fats in moderation (avocado, nuts, olive oil)",
+                    "Plenty of water and herbal teas"
+                ];
+                
+                avoidList = [
+                    "Processed and fast foods",
+                    "Sugary drinks and snacks",
+                    "White bread, pasta, and refined grains",
+                    "High-calorie condiments and dressings",
+                    "Alcohol (empty calories)"
+                ];
+                
+                howMuch = "Create a 300-500 calorie deficit daily through diet and exercise for steady weight loss.";
+                additionalTips = "Combine dietary changes with 150+ minutes of moderate exercise weekly. Focus on sustainable changes.";
+            } 
+            else {
+                category = "Obese";
+                categoryElement.className = "category obese";
+                idealWeight = "Consult a healthcare provider for a personalized weight management plan to improve health.";
+                
+                eatList = [
+                    "Non-starchy vegetables (leafy greens, broccoli, peppers)",
+                    "Lean proteins (chicken, turkey, fish, tofu)",
+                    "High-fiber foods (beans, lentils, berries)",
+                    "Healthy fats in small amounts (nuts, seeds, avocado)",
+                    "Water and unsweetened beverages"
+                ];
+                
+                avoidList = [
+                    "Processed and fried foods",
+                    "Sugary drinks and desserts",
+                    "Refined carbohydrates (white bread, white rice)",
+                    "Large portions of even healthy foods",
+                    "Alcohol and high-calorie beverages"
+                ];
+                
+                howMuch = "Work with a professional to determine appropriate calorie intake. Start with small, sustainable changes.";
+                additionalTips = "Medical supervision may be beneficial. Focus on health improvements rather than just weight loss.";
+            }
+
+            categoryElement.textContent = category;
+            document.getElementById('ideal-weight-tip').textContent = idealWeight;
+            
+            // Populate nutrition lists
+            const eatListElement = document.getElementById('bmi-eat');
+            const avoidListElement = document.getElementById('bmi-avoid');
+            
+            eatListElement.innerHTML = '';
+            avoidListElement.innerHTML = '';
+            
+            eatList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.86" stroke="#5CB85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 4L12 14.01L9 11.01" stroke="#5CB85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="good-food">${item}</span>`;
+                eatListElement.appendChild(li);
+            });
+            
+            avoidList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18" stroke="#D9534F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18" stroke="#D9534F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="avoid-food">${item}</span>`;
+                avoidListElement.appendChild(li);
+            });
+            
+            document.getElementById('bmi-how-much').textContent = howMuch;
+            document.getElementById('bmi-additional-tips').textContent = additionalTips;
+        }
+
+        // BMR Calculator
+        document.getElementById('bmr-metric-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('bmr-imperial-btn').classList.remove('active');
+            document.getElementById('bmr-metric-inputs').style.display = 'block';
+            document.getElementById('bmr-imperial-inputs').style.display = 'none';
+        });
+        document.getElementById('bmr-imperial-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('bmr-metric-btn').classList.remove('active');
+            document.getElementById('bmr-metric-inputs').style.display = 'none';
+            document.getElementById('bmr-imperial-inputs').style.display = 'block';
+        });
+
+        function calculateBMR() {
+            const age = parseFloat(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            const activityLevel = parseFloat(document.getElementById('activity-level').value);
+            const goal = document.getElementById('bmr-goal').value;
+            let weight, height, bmr, tdee;
+
+            if (document.getElementById('bmr-metric-btn').classList.contains('active')) {
+                weight = parseFloat(document.getElementById('bmr-weight-kg').value);
+                height = parseFloat(document.getElementById('bmr-height-cm').value);
+                if (!weight || !height || !age) {
+                    alert("Please enter valid details.");
+                    return;
+                }
+            } else {
+                weight = parseFloat(document.getElementById('bmr-weight-lbs').value) / 2.205;
+                const feet = parseFloat(document.getElementById('bmr-height-ft').value);
+                const inches = parseFloat(document.getElementById('bmr-height-in').value);
+                if (!weight || !feet || !inches || !age) {
+                    alert("Please enter valid details.");
+                    return;
+                }
+                height = (feet * 30.48) + (inches * 2.54);
+            }
+
+            // Harris-Benedict Equation
+            if (gender === 'male') {
+                bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            }
+
+            tdee = bmr * activityLevel;
+
+            // Calculate goal calories
+            let lossSlow = Math.round(tdee - 500);
+            let lossFast = Math.round(tdee - 1000);
+            let gainSlow = Math.round(tdee + 500);
+            
+            // Adjust for goal
+            let recommendedCalories = tdee;
+            if (goal === 'loss') recommendedCalories = lossSlow;
+            else if (goal === 'gain') recommendedCalories = gainSlow;
+
+            document.getElementById('bmr-value').textContent = Math.round(bmr);
+            document.getElementById('tdee-value').textContent = Math.round(tdee);
+            document.getElementById('loss-slow').textContent = lossSlow;
+            document.getElementById('loss-fast').textContent = lossFast;
+            document.getElementById('maintenance').textContent = Math.round(tdee);
+            document.getElementById('gain-slow').textContent = gainSlow;
+            document.getElementById('bmr-result').style.display = 'block';
+            
+            // Generate nutrition advice based on goal
+            let eatList, avoidList, howMuch, mealTiming;
+            
+            if (goal === 'loss') {
+                eatList = [
+                    "High-volume, low-calorie foods (vegetables, berries)",
+                    "Lean proteins (chicken, turkey, fish, egg whites)",
+                    "High-fiber foods (beans, lentils, whole grains)",
+                    "Healthy fats in moderation (nuts, seeds, avocado)",
+                    "Water and calorie-free beverages"
+                ];
+                
+                avoidList = [
+                    "Processed and packaged snacks",
+                    "Sugary drinks and juices",
+                    "Fried foods and fatty meats",
+                    "Refined carbohydrates (white bread, pasta)",
+                    "Alcohol and high-calorie coffee drinks"
+                ];
+                
+                howMuch = `Aim for ${Math.round(recommendedCalories)} calories per day. Focus on protein (30%), carbs (40%), fats (30%).`;
+                mealTiming = "Eat every 3-4 hours to maintain energy and prevent overeating. Front-load calories earlier in the day.";
+            } 
+            else if (goal === 'gain') {
+                eatList = [
+                    "Calorie-dense healthy foods (nuts, dried fruit, avocado)",
+                    "Lean proteins (chicken, fish, lean beef, eggs)",
+                    "Complex carbohydrates (oats, sweet potatoes, quinoa)",
+                    "Healthy fats (olive oil, nut butters, full-fat dairy)",
+                    "Smoothies with protein powder and fruit"
+                ];
+                
+                avoidList = [
+                    "Filling up on low-calorie foods",
+                    "Skipping meals or snacks",
+                    "Processed junk food (poor nutrition)",
+                    "Drinking liquids before meals",
+                    "Excessive fiber that reduces appetite"
+                ];
+                
+                howMuch = `Aim for ${Math.round(recommendedCalories)} calories per day. Focus on protein (25%), carbs (50%), fats (25%).`;
+                mealTiming = "Eat every 2-3 hours. Have a protein-rich snack before bed to support overnight muscle growth.";
+            } 
+            else { // maintenance
+                eatList = [
+                    "Variety of colorful fruits and vegetables",
+                    "Lean proteins (chicken, fish, tofu, legumes)",
+                    "Whole grains (brown rice, quinoa, whole wheat)",
+                    "Healthy fats (avocado, nuts, olive oil)",
+                    "Dairy or dairy alternatives"
+                ];
+                
+                avoidList = [
+                    "Processed foods with added sugars",
+                    "Trans fats and excessive saturated fats",
+                    "Sugary drinks and alcohol in excess",
+                    "Overeating even healthy foods",
+                    "Skipping meals leading to overeating later"
+                ];
+                
+                howMuch = `Maintain around ${Math.round(recommendedCalories)} calories daily. Balance macros: protein (25%), carbs (45%), fats (30%).`;
+                mealTiming = "Eat 3 main meals + 1-2 snacks. Listen to hunger/fullness cues for portion sizes.";
+            }
+            
+            // Populate nutrition lists
+            const eatListElement = document.getElementById('bmr-eat');
+            const avoidListElement = document.getElementById('bmr-avoid');
+            
+            eatListElement.innerHTML = '';
+            avoidListElement.innerHTML = '';
+            
+            eatList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.86" stroke="#5CB85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 4L12 14.01L9 11.01" stroke="#5CB85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="good-food">${item}</span>`;
+                eatListElement.appendChild(li);
+            });
+            
+            avoidList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18" stroke="#D9534F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18" stroke="#D9534F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="avoid-food">${item}</span>`;
+                avoidListElement.appendChild(li);
+            });
+            
+            document.getElementById('bmr-how-much').textContent = howMuch;
+            document.getElementById('bmr-meal-timing').textContent = mealTiming;
+        }
+
+        // Body Fat Calculator
+        document.getElementById('bodyfat-metric-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('bodyfat-imperial-btn').classList.remove('active');
+            document.getElementById('bodyfat-metric-inputs').style.display = 'block';
+            document.getElementById('bodyfat-imperial-inputs').style.display = 'none';
+        });
+        document.getElementById('bodyfat-imperial-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('bodyfat-metric-btn').classList.remove('active');
+            document.getElementById('bodyfat-metric-inputs').style.display = 'none';
+            document.getElementById('bodyfat-imperial-inputs').style.display = 'block';
+        });
+
+        document.getElementById('bodyfat-gender').addEventListener('change', function() {
+            const isFemale = this.value === 'female';
+            document.getElementById('hip-cm-group').style.display = isFemale ? 'block' : 'none';
+            document.getElementById('hip-in-group').style.display = isFemale ? 'block' : 'none';
+        });
+
+        function calculateBodyFat() {
+            const gender = document.getElementById('bodyfat-gender').value;
+            let waist, neck, hip, bodyFat;
+
+            if (document.getElementById('bodyfat-metric-btn').classList.contains('active')) {
+                waist = parseFloat(document.getElementById('waist-cm').value);
+                neck = parseFloat(document.getElementById('neck-cm').value);
+                if (gender === 'female') hip = parseFloat(document.getElementById('hip-cm').value);
+                if (!waist || !neck || (gender === 'female' && !hip)) {
+                    alert("Please enter all required measurements.");
+                    return;
+                }
+            } else {
+                waist = parseFloat(document.getElementById('waist-in').value);
+                neck = parseFloat(document.getElementById('neck-in').value);
+                if (gender === 'female') hip = parseFloat(document.getElementById('hip-in').value);
+                if (!waist || !neck || (gender === 'female' && !hip)) {
+                    alert("Please enter all required measurements.");
+                    return;
+                }
+            }
+
+            // U.S. Navy Body Fat Formula
+            if (gender === 'male') {
+                bodyFat = 86.010 * Math.log10(waist - neck) - 70.041 * Math.log10(neck) + 36.76;
+            } else {
+                bodyFat = 163.205 * Math.log10(waist + hip - neck) - 97.684 * Math.log10(neck) - 78.387;
+            }
+
+            document.getElementById('bodyfat-value').textContent = bodyFat.toFixed(1);
+            document.getElementById('bodyfat-result').style.display = 'block';
+
+            const categoryElement = document.getElementById('bodyfat-category');
+            let reduceList, maintainList, avoidList, supplements;
+            
+            if (gender === 'male') {
+                if (bodyFat < 6) {
+                    categoryElement.textContent = "Essential Fat";
+                    categoryElement.className = "category underweight";
+                    
+                    reduceList = ["N/A - You're at essential fat levels"];
+                    maintainList = [
+                        "Healthy fats (avocado, nuts, olive oil)",
+                        "Protein-rich foods (lean meats, fish, eggs)",
+                        "Complex carbohydrates (whole grains, vegetables)"
+                    ];
+                    avoidList = ["Extreme dieting or fat loss"];
+                    supplements = "Consider omega-3s and multivitamin to support overall health at low body fat.";
+                }
+                else if (bodyFat < 14) {
+                    categoryElement.textContent = "Athlete";
+                    categoryElement.className = "category normal";
+                    
+                    reduceList = [
+                        "Refined sugars and processed foods",
+                        "Excessive alcohol",
+                        "Fried and fatty foods"
+                    ];
+                    maintainList = [
+                        "Lean proteins (chicken, fish, tofu)",
+                        "Complex carbs (sweet potatoes, quinoa)",
+                        "Healthy fats (nuts, seeds, avocado)"
+                    ];
+                    avoidList = [
+                        "Crash dieting",
+                        "Over-restriction",
+                        "Excessive cardio"
+                    ];
+                    supplements = "Protein powder, creatine, and omega-3s can support your athletic performance.";
+                }
+                else if (bodyFat < 18) {
+                    categoryElement.textContent = "Fitness";
+                    categoryElement.className = "category normal";
+                    
+                    reduceList = [
+                        "Processed carbohydrates",
+                        "Sugary snacks and drinks",
+                        "High-fat dairy products"
+                    ];
+                    maintainList = [
+                        "High-quality proteins",
+                        "Fiber-rich vegetables",
+                        "Whole food carbohydrates"
+                    ];
+                    avoidList = [
+                        "Late-night snacking",
+                        "Mindless eating",
+                        "Sugary coffee drinks"
+                    ];
+                    supplements = "Protein supplements and BCAAs can help maintain muscle while leaning out.";
+                }
+                else if (bodyFat < 25) {
+                    categoryElement.textContent = "Average";
+                    categoryElement.className = "category overweight";
+                    
+                    reduceList = [
+                        "Processed and fast foods",
+                        "White bread and pasta",
+                        "Sugary beverages"
+                    ];
+                    maintainList = [
+                        "Lean protein sources",
+                        "Non-starchy vegetables",
+                        "Healthy fats in moderation"
+                    ];
+                    avoidList = [
+                        "Eating out frequently",
+                        "Large portions",
+                        "Alcohol in excess"
+                    ];
+                    supplements = "Consider a multivitamin and fiber supplement to support healthier eating habits.";
+                }
+                else {
+                    categoryElement.textContent = "Obese";
+                    categoryElement.className = "category obese";
+                    
+                    reduceList = [
+                        "Processed and packaged foods",
+                        "Fried foods",
+                        "Sugary drinks and desserts"
+                    ];
+                    maintainList = [
+                        "High-fiber vegetables",
+                        "Lean proteins",
+                        "Water and herbal teas"
+                    ];
+                    avoidList = [
+                        "Fast food",
+                        "Large restaurant portions",
+                        "High-calorie beverages"
+                    ];
+                    supplements = "Consult a doctor before starting any supplements. Focus on whole food changes first.";
+                }
+            } else { // female
+                if (bodyFat < 14) {
+                    categoryElement.textContent = "Essential Fat";
+                    categoryElement.className = "category underweight";
+                    
+                    reduceList = ["N/A - You're at essential fat levels"];
+                    maintainList = [
+                        "Healthy fats (avocado, nuts, seeds)",
+                        "Quality proteins (fish, chicken, legumes)",
+                        "Complex carbohydrates (whole grains, vegetables)"
+                    ];
+                    avoidList = ["Further fat loss"];
+                    supplements = "Omega-3s, iron, and calcium supplements may be beneficial at low body fat levels.";
+                }
+                else if (bodyFat < 21) {
+                    categoryElement.textContent = "Athlete";
+                    categoryElement.className = "category normal";
+                    
+                    reduceList = [
+                        "Processed snacks",
+                        "Alcohol",
+                        "Added sugars"
+                    ];
+                    maintainList = [
+                        "Lean proteins",
+                        "Colorful vegetables",
+                        "Healthy fats"
+                    ];
+                    avoidList = [
+                        "Extreme dieting",
+                        "Over-restriction",
+                        "Excessive cardio"
+                    ];
+                    supplements = "Protein powder, iron, and omega-3s can support athletic performance and recovery.";
+                }
+                else if (bodyFat < 25) {
+                    categoryElement.textContent = "Fitness";
+                    categoryElement.className = "category normal";
+                    
+                    reduceList = [
+                        "Refined carbohydrates",
+                        "Sugary treats",
+                        "High-calorie beverages"
+                    ];
+                    maintainList = [
+                        "High-quality proteins",
+                        "Fiber-rich foods",
+                        "Healthy fats in moderation"
+                    ];
+                    avoidList = [
+                        "Late-night eating",
+                        "Emotional eating",
+                        "Skipping meals"
+                    ];
+                    supplements = "Collagen peptides and BCAAs can support muscle maintenance during fat loss.";
+                }
+                else if (bodyFat < 32) {
+                    categoryElement.textContent = "Average";
+                    categoryElement.className = "category overweight";
+                    
+                    reduceList = [
+                        "Processed foods",
+                        "White flour products",
+                        "Sugary drinks"
+                    ];
+                    maintainList = [
+                        "Lean proteins",
+                        "Non-starchy vegetables",
+                        "Whole grains"
+                    ];
+                    avoidList = [
+                        "Large restaurant portions",
+                        "Mindless snacking",
+                        "Alcohol in excess"
+                    ];
+                    supplements = "A good multivitamin and probiotic can support healthier eating habits.";
+                }
+                else {
+                    categoryElement.textContent = "Obese";
+                    categoryElement.className = "category obese";
+                    
+                    reduceList = [
+                        "Fast food",
+                        "Packaged snacks",
+                        "Sugary beverages"
+                    ];
+                    maintainList = [
+                        "High-fiber vegetables",
+                        "Lean protein sources",
+                        "Water and herbal teas"
+                    ];
+                    avoidList = [
+                        "Fried foods",
+                        "Large portions",
+                        "High-calorie coffee drinks"
+                    ];
+                    supplements = "Consult a doctor before starting any supplements. Focus on sustainable dietary changes first.";
+                }
+            }
+            
+            // Populate nutrition lists
+            const reduceListElement = document.getElementById('bodyfat-reduce');
+            const maintainListElement = document.getElementById('bodyfat-maintain');
+            const avoidListElement = document.getElementById('bodyfat-avoid');
+            
+            reduceListElement.innerHTML = '';
+            maintainListElement.innerHTML = '';
+            avoidListElement.innerHTML = '';
+            
+            reduceList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.86" stroke="#5CB85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 4L12 14.01L9 11.01" stroke="#5CB85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="good-food">${item}</span>`;
+                reduceListElement.appendChild(li);
+            });
+            
+            maintainList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 12L11 15L16 9" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>${item}</span>`;
+                maintainListElement.appendChild(li);
+            });
+            
+            avoidList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18" stroke="#D9534F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18" stroke="#D9534F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="avoid-food">${item}</span>`;
+                avoidListElement.appendChild(li);
+            });
+            
+            document.getElementById('bodyfat-supplements').textContent = supplements;
+        }
+
+        // Ideal Weight Calculator
+        document.getElementById('ideal-metric-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('ideal-imperial-btn').classList.remove('active');
+            document.getElementById('ideal-metric-inputs').style.display = 'block';
+            document.getElementById('ideal-imperial-inputs').style.display = 'none';
+        });
+        document.getElementById('ideal-imperial-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('ideal-metric-btn').classList.remove('active');
+            document.getElementById('ideal-metric-inputs').style.display = 'none';
+            document.getElementById('ideal-imperial-inputs').style.display = 'block';
+        });
+
+        function calculateIdealWeight() {
+            const gender = document.getElementById('ideal-gender').value;
+            const frameSize = document.getElementById('frame-size').value;
+            let height, hamwi, devine, range;
+
+            if (document.getElementById('ideal-metric-btn').classList.contains('active')) {
+                height = parseFloat(document.getElementById('ideal-height-cm').value) / 2.54; // cm → in
+                if (!height) {
+                    alert("Please enter your height.");
+                    return;
+                }
+            } else {
+                const feet = parseFloat(document.getElementById('ideal-height-ft').value);
+                const inches = parseFloat(document.getElementById('ideal-height-in').value);
+                if (!feet || isNaN(inches)) {
+                    alert("Please enter your height.");
+                    return;
+                }
+                height = (feet * 12) + inches;
+            }
+
+            // Hamwi Formula (1964)
+            if (gender === 'male') {
+                hamwi = 48 + (2.7 * (height - 60));
+            } else {
+                hamwi = 45.5 + (2.2 * (height - 60));
+            }
+
+            // Devine Formula (1974)
+            if (gender === 'male') {
+                devine = 50 + (2.3 * (height - 60));
+            } else {
+                devine = 45.5 + (2.3 * (height - 60));
+            }
+
+            // Adjust for frame size (±10%)
+            const adjustment = frameSize === 'small' ? 0.9 : frameSize === 'large' ? 1.1 : 1;
+            hamwi *= adjustment;
+            devine *= adjustment;
+
+            if (document.getElementById('ideal-metric-btn').classList.contains('active')) {
+                range = `${Math.round(hamwi / 2.205)} - ${Math.round(devine / 2.205)} kg`;
+            } else {
+                range = `${Math.round(hamwi)} - ${Math.round(devine)} lbs`;
+            }
+
+            document.getElementById('ideal-weight-range').textContent = range;
+            document.getElementById('idealweight-result').style.display = 'block';
+            document.getElementById('ideal-weight-tip').textContent = 
+                `For a ${frameSize} frame, aim for the middle of this range.`;
+                
+            // Generate nutrition advice
+            let foodsList, portions, limitList, frequency;
+            
+            foodsList = [
+                "Colorful fruits and vegetables",
+                "Lean proteins (chicken, fish, tofu)",
+                "Whole grains (brown rice, quinoa, oats)",
+                "Healthy fats (avocado, nuts, olive oil)",
+                "Low-fat dairy or alternatives"
+            ];
+            
+            portions = "Use the plate method: 1/2 plate vegetables, 1/4 plate protein, 1/4 plate whole grains, plus healthy fats.";
+            
+            limitList = [
+                "Processed and packaged foods",
+                "Sugary drinks and snacks",
+                "Fried foods and fatty meats",
+                "Large portions of even healthy foods",
+                "Alcohol in excess"
+            ];
+            
+            frequency = "Eat 3 balanced meals + 1-2 small snacks daily. Don't skip meals to avoid overeating later.";
+            
+            // Populate nutrition lists
+            const foodsListElement = document.getElementById('idealweight-foods');
+            const limitListElement = document.getElementById('idealweight-limit');
+            
+            foodsListElement.innerHTML = '';
+            limitListElement.innerHTML = '';
+            
+            foodsList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.86" stroke="#5CB85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 4L12 14.01L9 11.01" stroke="#5CB85C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="good-food">${item}</span>`;
+                foodsListElement.appendChild(li);
+            });
+            
+            limitList.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18" stroke="#D9534F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18" stroke="#D9534F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="avoid-food">${item}</span>`;
+                limitListElement.appendChild(li);
+            });
+            
+            document.getElementById('idealweight-portions').textContent = portions;
+            document.getElementById('idealweight-frequency').textContent = frequency;
+        }
+
+        // Calorie Calculator
+        document.getElementById('calorie-metric-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('calorie-imperial-btn').classList.remove('active');
+            document.getElementById('calorie-metric-inputs').style.display = 'block';
+            document.getElementById('calorie-imperial-inputs').style.display = 'none';
+        });
+        document.getElementById('calorie-imperial-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('calorie-metric-btn').classList.remove('active');
+            document.getElementById('calorie-metric-inputs').style.display = 'none';
+            document.getElementById('calorie-imperial-inputs').style.display = 'block';
+        });
+
+        function calculateCalories() {
+            const goal = document.getElementById('calorie-goal').value;
+            const timeframe = parseFloat(document.getElementById('timeframe').value);
+            const activityLevel = parseFloat(document.getElementById('calorie-activity').value);
+            let currentWeight, targetWeight, weightChange, weeklyChange, calorieTarget;
+            let isMetric = document.getElementById('calorie-metric-btn').classList.contains('active');
+
+            if (isMetric) {
+                currentWeight = parseFloat(document.getElementById('current-weight-kg').value);
+                targetWeight = parseFloat(document.getElementById('target-weight-kg').value);
+                if (!currentWeight || !targetWeight || !timeframe) {
+                    alert("Please enter all required fields.");
+                    return;
+                }
+                weightChange = targetWeight - currentWeight;
+                weeklyChange = weightChange / timeframe;
+            } else {
+                currentWeight = parseFloat(document.getElementById('current-weight-lbs').value);
+                targetWeight = parseFloat(document.getElementById('target-weight-lbs').value);
+                if (!currentWeight || !targetWeight || !timeframe) {
+                    alert("Please enter all required fields.");
+                    return;
+                }
+                weightChange = targetWeight - currentWeight;
+                weeklyChange = weightChange / timeframe;
+            }
+
+            // Calculate BMR (simplified)
+            let bmr;
+            if (isMetric) {
+                bmr = currentWeight * 22; // Rough estimate
+            } else {
+                bmr = currentWeight * 10; // Rough estimate
+            }
+
+            // Calculate TDEE
+            let tdee = bmr * activityLevel;
+
+            // Adjust for goal
+            if (goal === 'loss') {
+                calorieTarget = tdee - (weeklyChange * 7700 / 7); // 7700 kcal ≈ 1kg fat
+            } else if (goal === 'gain') {
+                calorieTarget = tdee + (Math.abs(weeklyChange) * 7700 / 7);
+            } else { // maintenance
+                calorieTarget = tdee;
+            }
+
+            // Ensure minimum calories
+            calorieTarget = Math.max(calorieTarget, 1200);
+
+            document.getElementById('calorie-target').textContent = Math.round(calorieTarget);
+            document.getElementById('start-weight').textContent = isMetric ? `${currentWeight} kg` : `${currentWeight} lbs`;
+            document.getElementById('end-weight').textContent = isMetric ? `${targetWeight} kg` : `${targetWeight} lbs`;
+            document.getElementById('weekly-change').textContent = isMetric ? 
+                `${weeklyChange.toFixed(1)} kg/week` : `${weeklyChange.toFixed(1)} lbs/week`;
+            document.getElementById('completion-time').textContent = timeframe;
+            document.getElementById('calorie-result').style.display = 'block';
+            
+            // Generate meal plan
+            const breakfastCalories = Math.round(calorieTarget * 0.25);
+            const lunchCalories = Math.round(calorieTarget * 0.35);
+            const dinnerCalories = Math.round(calorieTarget * 0.3);
+            const snackCalories = Math.round(calorieTarget * 0.1);
+            
+            document.getElementById('breakfast-calories').textContent = breakfastCalories;
+            document.getElementById('lunch-calories').textContent = lunchCalories;
+            document.getElementById('dinner-calories').textContent = dinnerCalories;
+            document.getElementById('snack-calories').textContent = snackCalories;
+            
+            // Breakfast ideas
+            const breakfastList = [
+                `${breakfastCalories-100}-${breakfastCalories+100} kcal options:`,
+                "Oatmeal with berries and nuts",
+                "Greek yogurt with granola and honey",
+                "Scrambled eggs with whole wheat toast",
+                "Smoothie with protein powder, banana, and peanut butter",
+                "Avocado toast with poached eggs"
+            ];
+            
+            // Lunch ideas
+            const lunchList = [
+                `${lunchCalories-150}-${lunchCalories+150} kcal options:`,
+                "Grilled chicken salad with olive oil dressing",
+                "Quinoa bowl with roasted vegetables and tofu",
+                "Turkey and avocado whole wheat wrap",
+                "Salmon with sweet potato and broccoli",
+                "Lentil soup with whole grain bread"
+            ];
+            
+            // Dinner ideas
+            const dinnerList = [
+                `${dinnerCalories-150}-${dinnerCalories+150} kcal options:`,
+                "Grilled fish with quinoa and asparagus",
+                "Lean beef stir-fry with brown rice",
+                "Baked chicken with roasted vegetables",
+                "Shrimp and vegetable pasta (whole wheat)",
+                "Vegetable curry with chickpeas and rice"
+            ];
+            
+            // Snack ideas
+            const snackList = [
+                `${snackCalories-50}-${snackCalories+50} kcal options:`,
+                "Handful of nuts and dried fruit",
+                "Protein shake or bar",
+                "Apple with peanut butter",
+                "Cottage cheese with berries",
+                "Hummus with vegetable sticks"
+            ];
+            
+            // Populate meal plan lists
+            populateMealList('calorie-breakfast', breakfastList);
+            populateMealList('calorie-lunch', lunchList);
+            populateMealList('calorie-dinner', dinnerList);
+            populateMealList('calorie-snacks', snackList);
+        }
+        
+        function populateMealList(elementId, items) {
+            const listElement = document.getElementById(elementId);
+            listElement.innerHTML = '';
+            
+            items.forEach((item, index) => {
+                const li = document.createElement('li');
+                if (index === 0) {
+                    li.textContent = item;
+                    li.style.fontWeight = '600';
+                    li.style.marginBottom = '5px';
+                } else {
+                    li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8 12L11 15L16 9" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>${item}</span>`;
+                }
+                listElement.appendChild(li);
+            });
+        }
+
+        // Macro Calculator
+        document.getElementById('macro-metric-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('macro-imperial-btn').classList.remove('active');
+            document.getElementById('macro-metric-inputs').style.display = 'block';
+            document.getElementById('macro-imperial-inputs').style.display = 'none';
+        });
+        document.getElementById('macro-imperial-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('macro-metric-btn').classList.remove('active');
+            document.getElementById('macro-metric-inputs').style.display = 'none';
+            document.getElementById('macro-imperial-inputs').style.display = 'block';
+        });
+
+        function calculateMacros() {
+            const goal = document.getElementById('macro-goal').value;
+            const activityLevel = parseFloat(document.getElementById('macro-activity').value);
+            const proteinPerPound = parseFloat(document.getElementById('protein-preference').value);
+            const fatPercent = parseFloat(document.getElementById('fat-preference').value);
+            let weight, calories, protein, carbs, fats;
+
+            if (document.getElementById('macro-metric-btn').classList.contains('active')) {
+                weight = parseFloat(document.getElementById('macro-weight-kg').value);
+                if (!weight) {
+                    alert("Please enter your weight.");
+                    return;
+                }
+                weight *= 2.205; // kg → lbs
+            } else {
+                weight = parseFloat(document.getElementById('macro-weight-lbs').value);
+                if (!weight) {
+                    alert("Please enter your weight.");
+                    return;
+                }
+            }
+
+            // Calculate TDEE (simplified)
+            calories = weight * 15 * activityLevel;
+
+            // Adjust for goal
+            if (goal === 'fatloss') calories *= 0.8;
+            else if (goal === 'musclegain') calories *= 1.1;
+            else if (goal === 'performance') calories *= 1.2;
+
+            // Protein (g)
+            protein = weight * proteinPerPound;
+
+            // Fats (g)
+            fats = (calories * (fatPercent / 100)) / 9;
+
+            // Carbs (g)
+            carbs = (calories - (protein * 4) - (fats * 9)) / 4;
+
+            // Calculate percentages
+            const proteinPercent = Math.round((protein * 4) / calories * 100);
+            const carbsPercent = Math.round((carbs * 4) / calories * 100);
+            const fatsPercent = Math.round((fats * 9) / calories * 100);
+
+            document.getElementById('macro-calories').textContent = Math.round(calories);
+            document.getElementById('macro-protein').textContent = Math.round(protein);
+            document.getElementById('macro-carbs').textContent = Math.round(carbs);
+            document.getElementById('macro-fats').textContent = Math.round(fats);
+            document.getElementById('macro-protein-percent').textContent = proteinPercent;
+            document.getElementById('macro-carbs-percent').textContent = carbsPercent;
+            document.getElementById('macro-fats-percent').textContent = fatsPercent;
+            document.getElementById('macros-result').style.display = 'block';
+            
+            // Set target amounts for food lists
+            document.getElementById('protein-target').textContent = Math.round(protein);
+            document.getElementById('carbs-target').textContent = Math.round(carbs);
+            document.getElementById('fats-target').textContent = Math.round(fats);
+            
+            // Generate food lists
+            const proteinFoods = [
+                "Chicken breast (24g protein per 3oz)",
+                "Salmon (22g protein per 3oz)",
+                "Eggs (6g protein per egg)",
+                "Greek yogurt (17g protein per 6oz)",
+                "Lean beef (22g protein per 3oz)",
+                "Tofu (10g protein per 3oz)",
+                "Protein powder (20-30g per scoop)"
+            ];
+            
+            const carbFoods = [
+                "Brown rice (45g carbs per cup cooked)",
+                "Sweet potato (27g carbs per medium)",
+                "Quinoa (40g carbs per cup cooked)",
+                "Oats (27g carbs per 1/2 cup dry)",
+                "Whole wheat bread (12g carbs per slice)",
+                "Fruits (15-30g carbs per serving)",
+                "Vegetables (5-15g carbs per serving)"
+            ];
+            
+            const fatFoods = [
+                "Avocado (21g fat per medium)",
+                "Almonds (14g fat per 1oz)",
+                "Olive oil (14g fat per tbsp)",
+                "Peanut butter (16g fat per 2tbsp)",
+                "Chia seeds (9g fat per oz)",
+                "Full-fat cheese (9g fat per oz)",
+                "Dark chocolate (12g fat per oz)"
+            ];
+            
+            let timingAdvice;
+            if (goal === 'fatloss') {
+                timingAdvice = "Front-load carbs earlier in the day. Have protein with each meal. Consider intermittent fasting if it suits your lifestyle.";
+            } else if (goal === 'musclegain') {
+                timingAdvice = "Eat every 2-3 hours. Have protein before and after workouts. Include carbs post-workout for recovery.";
+            } else if (goal === 'performance') {
+                timingAdvice = "Time carbs around workouts. Include protein in all meals. Stay hydrated and consider intra-workout nutrition for long sessions.";
+            } else { // maintenance
+                timingAdvice = "Eat balanced meals every 3-4 hours. Listen to hunger cues. Include all macros in each meal for satiety.";
+            }
+            
+            // Populate food lists
+            populateMacroList('macro-protein-foods', proteinFoods);
+            populateMacroList('macro-carb-foods', carbFoods);
+            populateMacroList('macro-fat-foods', fatFoods);
+            
+            document.getElementById('macro-timing').textContent = timingAdvice;
+        }
+        
+        function populateMacroList(elementId, items) {
+            const listElement = document.getElementById(elementId);
+            listElement.innerHTML = '';
+            
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 12L11 15L16 9" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>${item}</span>`;
+                listElement.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
