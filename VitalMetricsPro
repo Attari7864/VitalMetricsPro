@@ -1,9 +1,22 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="VitalMetrics Pro - Comprehensive health calculators with personalized nutrition advice for BMI, BMR, body fat, macros and more">
+    <meta name="keywords" content="BMI calculator, BMR calculator, TDEE calculator, body fat calculator, ideal weight calculator, calorie calculator, macros calculator, health metrics, nutrition advice">
+    <meta name="author" content="VitalMetrics Pro">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://yourdomain.com/vitalmetrics-pro">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="VitalMetrics Pro | Health Calculators with Nutrition Guidance">
+    <meta property="og:description" content="Comprehensive health calculators with personalized nutrition advice for BMI, BMR, body fat, macros and more">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/vitalmetrics-pro">
+    <meta property="og:image" content="https://yourdomain.com/images/vitalmetrics-preview.jpg">
+    
     <title>VitalMetrics Pro | Health Calculators with Nutrition Guidance</title>
     <style>
         :root {
@@ -427,7 +440,7 @@
                 
                 <div class="tips">
                     <strong>Healthy BMI Range:</strong> 18.5 - 24.9<br>
-                    <span id="ideal-weight-tip">-</span>
+                    <span id="bmi-ideal-weight-tip">-</span> <!-- FIXED: Changed ID here -->
                 </div>
                 
                 <table class="bmi-chart">
@@ -1281,7 +1294,7 @@
             }
 
             categoryElement.textContent = category;
-            document.getElementById('ideal-weight-tip').textContent = idealWeight;
+            document.getElementById('bmi-ideal-weight-tip').textContent = idealWeight; // FIXED: Updated ID reference here
             
             // Populate nutrition lists
             const eatListElement = document.getElementById('bmi-eat');
