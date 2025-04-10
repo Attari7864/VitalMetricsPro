@@ -1,23 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VitalMetrics Pro - Comprehensive health calculators with personalized nutrition advice for BMI, BMR, body fat, macros and more">
-    <meta name="keywords" content="BMI calculator, BMR calculator, TDEE calculator, body fat calculator, ideal weight calculator, calorie calculator, macros calculator, health metrics, nutrition advice">
-    <meta name="author" content="VitalMetrics Pro">
+
+    <!-- SEO Meta Tags -->
+    <title>VitalMetrics Pro - Health & Fitness Calculators</title>
+    <meta name="description" content="Use VitalMetrics Pro to calculate BMI, BMR, Body Fat, Calories, and more. Accurate, fast, and free health calculators.">
+    <meta name="keywords" content="BMI calculator, BMR calculator, Body Fat calculator, Calorie calculator, Health tools, Fitness tools">
+    <meta name="author" content="Muhammad Bilal Raza Qadri">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://yourdomain.com/vitalmetrics-pro">
     
-    <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="VitalMetrics Pro | Health Calculators with Nutrition Guidance">
-    <meta property="og:description" content="Comprehensive health calculators with personalized nutrition advice for BMI, BMR, body fat, macros and more">
+    <!-- Open Graph Tags for Social Sharing -->
+    <meta property="og:title" content="VitalMetrics Pro - Health & Fitness Calculators">
+    <meta property="og:description" content="Professional health calculators for fitness, weight loss, and wellness.">
+    <meta property="og:url" content="https://vitalmetricspro.com">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://yourdomain.com/vitalmetrics-pro">
     <meta property="og:image" content="https://yourdomain.com/images/vitalmetrics-preview.jpg">
-    
-    <title>VitalMetrics Pro | Health Calculators with Nutrition Guidance</title>
+
     <style>
         :root {
             --primary: #2E8B57;
